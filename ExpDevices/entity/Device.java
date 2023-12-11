@@ -1,3 +1,5 @@
+package ExpDevices.entity;
+
 public class Device {
     /** 设备编号 */
     private String id;
