@@ -1,6 +1,8 @@
 package ExpDevices.entity;
 
-public class Device {
+import java.io.Serializable;
+
+public class Device implements Serializable {
     /** 设备编号 */
     private String id;
     /** 设备名称 */
@@ -72,6 +74,13 @@ public class Device {
 
     public void setDeprecated(boolean isDeprecated) {
         this.isDeprecated = isDeprecated;
+    }
+
+    @Override
+    public String toString() {
+        return id + ':' + name + ':' + who + ':' + type + ':' +
+                (isBorrowed ? "Borrowed" : "notBorrowed") + ':' +
+                (isDeprecated ? "Deprecated" : "notDeprecated");
     }
 
 }
