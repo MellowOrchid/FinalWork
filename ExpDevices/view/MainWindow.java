@@ -2,15 +2,19 @@ package ExpDevices.view;
 
 import javax.swing.*;
 
+import ExpDevices.entity.Device;
+
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
+import java.util.Set;
 
 public class MainWindow extends JFrame {
     private JLabel l_;
     private JTable t_devices;
 
     public MainWindow() {
+        Set<Device> users;
         this.setTitle("实验设备管理系统");
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         final int WIDTH = 800;
