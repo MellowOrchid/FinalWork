@@ -9,10 +9,13 @@ public class Device {
     private String who;
     /** 设备类型 */
     private String type;
-    /** 设备状态（是否借出）*/
+    /** 设备状态（是否借出） */
     private boolean isBorrowed;
     /** 是否是报废设备 */
     private boolean isDeprecated;
+
+    public Device() {
+    }
 
     public Device(String id, String name, String who, String type, boolean isBorrowed, boolean isDeprecated) {
         this.id = id;
@@ -71,5 +74,4 @@ public class Device {
         this.isDeprecated = isDeprecated;
     }
 
-    
 }
