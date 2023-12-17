@@ -64,7 +64,10 @@ public class MainWindow extends JFrame {
 
         table = new JTable() {
             public boolean isCellEditable(int row, int column) {
-                return false;
+                if (column == 0) {
+                    return false;
+                }
+                return true;
             }
         };
         header = table.getTableHeader();
