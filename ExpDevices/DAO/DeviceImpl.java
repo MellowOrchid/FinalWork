@@ -12,16 +12,18 @@ import ExpDevices.entity.Device;
 
 public class DeviceImpl implements IDeviceDAO {
     private final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
-    private final String DB_URL = "jdbc:mysql://wsl.localhost:3306/ExpDev";
+    private final String HOST = "wsl.localhost";
+    private final long PORT = 3306;
+    private final String DB_NAME = "ExpDev";
+    private final String DB_URL = "jdbc:mysql://" + HOST + ":" + PORT + "/" + DB_NAME;
     private final String USER = "ExpDev";
-    private final String PASSWD = "Dev@0224";
+    private final String PWD = "Dev@0224";
 
     private Set<Device> devices;
     private String sqlReq;
     private ResultSet res;
     private Connection connection = null;
     private Statement statement = null;
-
 
     @Override
     public Set<Device> getDevices() {
@@ -30,7 +32,7 @@ public class DeviceImpl implements IDeviceDAO {
         try {
             Class.forName(JDBC_DRIVER);
             System.out.println("连接数据库…");
-            connection = DriverManager.getConnection(DB_URL, USER, PASSWD);
+            connection = DriverManager.getConnection(DB_URL, USER, PWD);
             statement = connection.createStatement();
             sqlReq = "SELECT * FROM devices;";
             res = statement.executeQuery(sqlReq);
