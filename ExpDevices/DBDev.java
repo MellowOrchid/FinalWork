@@ -12,6 +12,7 @@ public class DBDev {
         //         false);
         // deviceImpl.add(device1);
         // deviceImpl.add(device2);
+        deviceImpl.add(null);
 
         // System.out.println(deviceImpl.getDeviceByID("002"));
     }
