@@ -8,15 +8,11 @@ import ExpDevices.DAO.DeviceImpl;
 import ExpDevices.entity.Device;
 import ExpDevices.service.SetFont;
 
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.util.Set;
 
 public class MainWindow extends JFrame {
-    private JLabel l_;
+    private JLabel l_title;
     private JScrollPane scrollPane;
     private JTable table;
     private JTableHeader header;
@@ -28,9 +24,9 @@ public class MainWindow extends JFrame {
     public MainWindow() {
         Toolkit toolkit = Toolkit.getDefaultToolkit();
         Image image = toolkit.getImage(ICON);
+        Dimension screenSize = toolkit.getScreenSize();
         this.setIconImage(image);
         this.setTitle("实验设备管理系统");
-        Dimension screenSize = toolkit.getScreenSize();
         final int WIDTH = 1600;
         final int HEIGHT = 800;
         this.setSize(WIDTH, HEIGHT);
@@ -43,6 +39,7 @@ public class MainWindow extends JFrame {
     }
 
     private void init() {
+        this.setLayout(new BorderLayout(5, 5));
         Set<Device> devices = deviceImpl.getDevices();
         int devNum = devices.size();
         String[][] datas = new String[devNum][6];
@@ -52,7 +49,7 @@ public class MainWindow extends JFrame {
                 /* 2 */ "领用人",
                 /* 3 */ "设备类型",
                 /* 4 */ "是否借出",
-                /* 5 */ "是否是报废设备",
+                /* 5 */ "是否报废",
         };
 
         for (Device device : devices) {
@@ -76,18 +73,17 @@ public class MainWindow extends JFrame {
         model = (DefaultTableModel) this.table.getModel();
         model.setColumnIdentifiers(titles);
         model = new DefaultTableModel(datas, titles);
-        SetFont.setFont(font, header, table);
-        this.setLayout(new GridLayout(3, 1));
+        model.getValueAt(devNum, devNum);
         table.setModel(model);
         scrollPane = new JScrollPane();
         scrollPane.add(table);
         scrollPane.setViewportView(table);
 
-        l_ = new JLabel("测试");
+        l_title = new JLabel("欢迎使用实验设备管理系统");
 
-        this.add(l_);
-
-        this.add(scrollPane);
+        SetFont.setFont(font, header, table, l_title);
+        this.add(l_title, BorderLayout.NORTH);
+        this.add(scrollPane, BorderLayout.CENTER);
     }
 
     public void showMessage(String message) {
