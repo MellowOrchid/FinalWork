@@ -3,6 +3,7 @@ package ExpDevices.view;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellEditor;
 
 import ExpDevices.DAO.DeviceImpl;
 import ExpDevices.entity.Device;
@@ -16,6 +17,8 @@ public class MainWindow extends JFrame {
     private JScrollPane scrollPane;
     private JTable table;
     private JTableHeader header;
+    private JComboBox<String> comboBox;
+    private TableCellEditor cellEditor;
     private DefaultTableModel model;
     private Font font = new Font("仿宋", 0, 30);
     private DeviceImpl deviceImpl = new DeviceImpl();
@@ -42,6 +45,10 @@ public class MainWindow extends JFrame {
         this.setLayout(new BorderLayout(5, 5));
         Set<Device> devices = deviceImpl.getDevices();
         int devNum = devices.size();
+        String[] status = {
+                "false",
+                "true"
+        };
         String[][] datas = new String[devNum][6];
         String[] titles = {
                 /* 0 */ "设备编号",
@@ -81,6 +88,12 @@ public class MainWindow extends JFrame {
         scrollPane = new JScrollPane();
         scrollPane.add(table);
         scrollPane.setViewportView(table);
+        comboBox = new JComboBox<String>(status);
+        comboBox.setPreferredSize(null);
+        comboBox.setSelectedIndex(0);
+        cellEditor = new DefaultCellEditor(comboBox);
+        table.getColumnModel().getColumn(4).setCellEditor(cellEditor);
+        table.getColumnModel().getColumn(5).setCellEditor(cellEditor);
 
         l_title = new JLabel("欢迎使用实验设备管理系统");
 
