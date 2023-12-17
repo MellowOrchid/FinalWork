@@ -1,7 +1,7 @@
 package ExpDevices;
 
 import ExpDevices.DAO.DeviceImpl;
-import ExpDevices.entity.Device;
+import ExpDevices.entity.*;
 
 public class DBDev {
     public static void main(String[] args) {
@@ -12,8 +12,9 @@ public class DBDev {
         //         false);
         // deviceImpl.add(device1);
         // deviceImpl.add(device2);
-        deviceImpl.add(null);
+        // deviceImpl.add(null);
 
-        // System.out.println(deviceImpl.getDeviceByID("002"));
+        System.out.println(deviceImpl.getDeviceByID("001"));
+        System.out.println(deviceImpl.getDeviceByID("002"));
     }
 }

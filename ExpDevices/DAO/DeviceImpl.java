@@ -15,11 +15,12 @@ public class DeviceImpl implements IDeviceDAO {
     private final String HOST = "wsl.localhost";
     private final long PORT = 3306;
     private final String DB_NAME = "ExpDev";
-    private final String DB_URL = "jdbc:mysql://" + HOST + ":" + PORT + "/" + DB_NAME;
+    private final String OPTIONS = "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
+    private final String DB_URL = "jdbc:mysql://" + HOST + ":" + PORT + "/" + DB_NAME + OPTIONS;
     private final String USER = "ExpDev";
     private final String PWD = "Dev@0224";
 
-    private Set<Device> devices;
+    private Set<Device> devices = new HashSet<Device>();
     private String sqlReq;
     private ResultSet res;
     private Connection connection = null;
@@ -27,13 +28,12 @@ public class DeviceImpl implements IDeviceDAO {
 
     @Override
     public Set<Device> getDevices() {
-        devices = new HashSet<Device>();
-
         try {
             Class.forName(JDBC_DRIVER);
             System.out.println("连接数据库…");
             connection = DriverManager.getConnection(DB_URL, USER, PWD);
             statement = connection.createStatement();
+            System.out.println("正在查询…");
             sqlReq = "SELECT * FROM devices;";
             res = statement.executeQuery(sqlReq);
 
@@ -76,6 +76,9 @@ public class DeviceImpl implements IDeviceDAO {
     @Override
     public Device getDeviceByID(String id) {
         Device device = null;
+        if (devices.isEmpty()) {
+            devices = getDevices();
+        }
 
         for (Device d : devices) {
             if (d.getId().endsWith(id)) {
@@ -96,6 +99,46 @@ public class DeviceImpl implements IDeviceDAO {
     @Override
     public void setDevices(Set<Device> devices) {
         this.devices = devices;
+        try {
+            Class.forName(JDBC_DRIVER);
+            System.out.println("连接数据库…");
+            connection = DriverManager.getConnection(DB_URL, USER, PWD);
+            statement = connection.createStatement();
+
+            for (Device device : devices) {
+                String id = device.getId();
+                String name = device.getName();
+                String who = device.getWho();
+                String type = device.getType();
+                boolean isBorrowed = device.isBorrowed();
+                boolean isDeprecated = device.isDeprecated();
+                sqlReq = "INSERT INTO devices (`id`, `name`, `who`, `type`, `isBorrowed`, `isDeprecated`) VALUES ('"
+                        + id + "', '" + name + "', '" + who + "', '" + type + "', '" + (isBorrowed ? 0 : 1) + "', '"
+                        + (isDeprecated ? 0 : 1) + "');";
+                System.out.println(id + ": status: " + statement.executeUpdate(sqlReq));
+            }
+
+            statement.close();
+            connection.close();
+        } catch (ClassNotFoundException e) {
+            System.out.println("Class 未找到。");
+            e.printStackTrace();
+        } catch (SQLException e) {
+            System.out.println("SQL 错误。");
+            e.printStackTrace();
+        } finally {
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                System.out.println("SQL 错误。");
+                e.printStackTrace();
+            }
+        }
     }
 
 }
