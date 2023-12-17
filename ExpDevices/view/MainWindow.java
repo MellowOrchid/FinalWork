@@ -11,6 +11,7 @@ import ExpDevices.service.SetFont;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.util.Set;
 
@@ -22,10 +23,14 @@ public class MainWindow extends JFrame {
     private DefaultTableModel model;
     private Font font = new Font("仿宋", 0, 30);
     private DeviceImpl deviceImpl = new DeviceImpl();
+    private final String ICON = "ExpDevices/static/iconImg.png";
 
     public MainWindow() {
+        Toolkit toolkit = Toolkit.getDefaultToolkit();
+        Image image = toolkit.getImage(ICON);
+        this.setIconImage(image);
         this.setTitle("实验设备管理系统");
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension screenSize = toolkit.getScreenSize();
         final int WIDTH = 1600;
         final int HEIGHT = 800;
         this.setSize(WIDTH, HEIGHT);
@@ -60,7 +65,7 @@ public class MainWindow extends JFrame {
             datas[devNum][5] = device.isDeprecated() + "";
         }
 
-        table = new JTable(){
+        table = new JTable() {
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
@@ -83,5 +88,9 @@ public class MainWindow extends JFrame {
         this.add(l_);
 
         this.add(scrollPane);
+    }
+
+    public void showMessage(String message) {
+        JOptionPane.showMessageDialog(this, message);
     }
 }
