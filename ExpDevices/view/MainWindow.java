@@ -97,7 +97,7 @@ public class MainWindow extends JFrame {
 
         l_title = new JLabel("欢迎使用实验设备管理系统");
 
-        SetFont.setFont(font, header, table, l_title);
+        SetFont.setFont(font, header, table, l_title, comboBox);
         this.add(l_title, BorderLayout.NORTH);
         this.add(scrollPane, BorderLayout.CENTER);
     }
