@@ -22,7 +22,7 @@ import java.util.Set;
 import java.util.Vector;
 
 public class MainWindow extends JFrame {
-    private static boolean isChanged = false;
+    public static boolean isChanged = false;
     private List<String> titleList = Arrays.asList(
             /* 0 */ "设备编号",
             /* 1 */ "设备名称",
@@ -34,12 +34,12 @@ public class MainWindow extends JFrame {
     public static Vector<Vector<String>> dataVectors = new Vector<Vector<String>>();
     private JLabel l_title;
     private JScrollPane scrollPane;
-    private JTable table;
+    private static JTable table;
     private JTableHeader header;
     private JComboBox<String> comboBox;
     private TableCellEditor cellEditor;
     private TableModel model;
-    private JButton saveButton, flushButton, addButton;
+    private JButton saveButton, flushButton, addButton, deleteButton;
     private JPanel buttonsJPanel;
     private DeviceImpl deviceImpl = DeviceImpl.getDeviceImpl();
     private final Font FONT = new Font("仿宋", 0, 30);
@@ -145,6 +145,16 @@ public class MainWindow extends JFrame {
 
         });
 
+        deleteButton = new JButton("删除");
+        deleteButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                onDelete();
+            }
+
+        });
+
         saveButton = new JButton("保存");
         saveButton.addActionListener(new ActionListener() {
 
@@ -156,12 +166,14 @@ public class MainWindow extends JFrame {
 
         });
 
-        buttonsJPanel = new JPanel(new GridLayout(1, 3, 2, 2));
+        buttonsJPanel = new JPanel(new GridLayout(1, 4, 2, 2));
         buttonsJPanel.add(addButton);
         buttonsJPanel.add(flushButton);
+        buttonsJPanel.add(deleteButton);
         buttonsJPanel.add(saveButton);
 
-        SetFont.setFont(FONT, header, table, l_title, comboBox, addButton, flushButton, saveButton);
+        SetFont.setFont(FONT, header, table, l_title, comboBox, addButton, flushButton, saveButton,
+                deleteButton);
         this.add(l_title, BorderLayout.NORTH);
         this.add(scrollPane, BorderLayout.CENTER);
         this.add(buttonsJPanel, BorderLayout.SOUTH);
@@ -208,17 +220,20 @@ public class MainWindow extends JFrame {
         System.out.println("更改将保存");
     }
 
-    public void onFlush() {
+    public static void onFlush() {
         System.out.println("刷新");
         table.updateUI();
     }
 
-    public static boolean isChanged() {
-        return isChanged;
-    }
-
-    public static void setChanged(boolean isChanged) {
-        MainWindow.isChanged = isChanged;
+    public void onDelete() {
+        int[] selectedRows = table.getSelectedRows();
+        int i = selectedRows.length;
+        while (i-- != 0) {
+            System.out.println(selectedRows[i]);
+            dataVectors.remove(selectedRows[i]);
+            table.updateUI();
+        }
+        table.clearSelection();
     }
 
 }
