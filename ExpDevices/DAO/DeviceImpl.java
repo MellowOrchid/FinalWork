@@ -21,7 +21,7 @@ public class DeviceImpl implements IDeviceDAO {
     private final String USER = "ExpDev";
     private final String PWD = "Dev@0224";
 
-    private Set<Device> devices = new HashSet<Device>();
+    private Set<Device> devices;
     private String sqlReq;
     private ResultSet res;
     private Connection connection = null;
@@ -29,58 +29,18 @@ public class DeviceImpl implements IDeviceDAO {
     private static DeviceImpl deviceImpl;
 
     private DeviceImpl() {
+        getDB();
     }
-
+    
     public static DeviceImpl getDeviceImpl() {
         if (deviceImpl == null) {
             deviceImpl = new DeviceImpl();
         }
         return deviceImpl;
     }
+
     @Override
     public Set<Device> getDevices() {
-        try {
-            Class.forName(JDBC_DRIVER);
-            System.out.println("连接数据库…");
-            connection = DriverManager.getConnection(DB_URL, USER, PWD);
-            statement = connection.createStatement();
-            System.out.println("正在查询…");
-            sqlReq = "SELECT * FROM devices;";
-            res = statement.executeQuery(sqlReq);
-
-            while (res.next()) {
-                String id = res.getString("id");
-                String name = res.getString("name");
-                String who = res.getString("who");
-                String type = res.getString("type");
-                boolean isBorrowed = res.getBoolean("isBorrowed");
-                boolean isDeprecated = res.getBoolean("isDeprecated");
-                devices.add(new Device(id, name, who, type, isBorrowed, isDeprecated));
-            }
-
-            res.close();
-            statement.close();
-            connection.close();
-        } catch (ClassNotFoundException e) {
-            System.out.println("Class 未找到。");
-            e.printStackTrace();
-        } catch (SQLException e) {
-            System.out.println("SQL 错误。");
-            e.printStackTrace();
-        } finally {
-            try {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                System.out.println("SQL 错误。");
-                e.printStackTrace();
-            }
-        }
-
         return devices;
     }
 
@@ -169,6 +129,54 @@ public class DeviceImpl implements IDeviceDAO {
             }
         }
         return status;
+    }
+
+    public void saveChanges() {
+    }
+
+    public void getDB() {
+        devices = new HashSet<Device>();
+        try {
+            Class.forName(JDBC_DRIVER);
+            System.out.println("连接数据库…");
+            connection = DriverManager.getConnection(DB_URL, USER, PWD);
+            statement = connection.createStatement();
+            System.out.println("正在查询…");
+            sqlReq = "SELECT * FROM devices;";
+            res = statement.executeQuery(sqlReq);
+
+            while (res.next()) {
+                String id = res.getString("id");
+                String name = res.getString("name");
+                String who = res.getString("who");
+                String type = res.getString("type");
+                boolean isBorrowed = res.getBoolean("isBorrowed");
+                boolean isDeprecated = res.getBoolean("isDeprecated");
+                devices.add(new Device(id, name, who, type, isBorrowed, isDeprecated));
+            }
+
+            res.close();
+            statement.close();
+            connection.close();
+        } catch (ClassNotFoundException e) {
+            System.out.println("Class 未找到。");
+            e.printStackTrace();
+        } catch (SQLException e) {
+            System.out.println("SQL 错误。");
+            e.printStackTrace();
+        } finally {
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                System.out.println("SQL 错误。");
+                e.printStackTrace();
+            }
+        }
     }
 
 }

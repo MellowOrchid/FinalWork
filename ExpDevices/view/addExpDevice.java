@@ -104,6 +104,7 @@ public class addExpDevice extends JFrame {
             JOptionPane.showMessageDialog(this, "添加失败，因为有重复的编号");
             return;
         }
+        MainWindow.setChanged(true);
         System.out.println("添加成功");
         JOptionPane.showMessageDialog(this, "添加成功");
         this.dispose();

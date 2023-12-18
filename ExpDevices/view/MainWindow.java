@@ -19,7 +19,7 @@ import java.awt.event.WindowEvent;
 import java.util.Set;
 
 public class MainWindow extends JFrame {
-    private boolean isChanged = false;
+    private static boolean isChanged = false;
     private JLabel l_title;
     private JScrollPane scrollPane;
     private JTable table;
@@ -27,7 +27,7 @@ public class MainWindow extends JFrame {
     private JComboBox<String> comboBox;
     private TableCellEditor cellEditor;
     private DefaultTableModel model;
-    private JButton saveButton, addButton;
+    private JButton saveButton, flushButton, addButton;
     private JPanel buttonsJPanel;
     private DeviceImpl deviceImpl = DeviceImpl.getDeviceImpl();
     private final Font FONT = new Font("仿宋", 0, 30);
@@ -60,7 +60,7 @@ public class MainWindow extends JFrame {
         this.setLayout(new BorderLayout(5, 5));
         Set<Device> devices = deviceImpl.getDevices();
         int devNum = devices.size();
-        String[] status = {
+        String[] devStatus = {
                 "false",
                 "true"
         };
@@ -95,8 +95,6 @@ public class MainWindow extends JFrame {
         header = table.getTableHeader();
         header.setPreferredSize(new Dimension(header.getWidth(), 50));
         table.setRowHeight(40);
-        model = (DefaultTableModel) this.table.getModel();
-        model.setColumnIdentifiers(titles);
         model = new DefaultTableModel(datas, titles);
         model.addTableModelListener(new TableModelListener() {
 
@@ -112,7 +110,7 @@ public class MainWindow extends JFrame {
         scrollPane = new JScrollPane();
         scrollPane.add(table);
         scrollPane.setViewportView(table);
-        comboBox = new JComboBox<String>(status);
+        comboBox = new JComboBox<String>(devStatus);
         comboBox.setPreferredSize(null);
         comboBox.setSelectedIndex(0);
         cellEditor = new DefaultCellEditor(comboBox);
@@ -137,6 +135,16 @@ public class MainWindow extends JFrame {
 
         });
 
+        flushButton = new JButton("刷新");
+        flushButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                onFlush();
+            }
+
+        });
+
         saveButton = new JButton("保存");
         saveButton.addActionListener(new ActionListener() {
 
@@ -148,11 +156,12 @@ public class MainWindow extends JFrame {
 
         });
 
-        buttonsJPanel = new JPanel(new GridLayout(1, 2, 2, 2));
+        buttonsJPanel = new JPanel(new GridLayout(1, 3, 2, 2));
         buttonsJPanel.add(addButton);
+        buttonsJPanel.add(flushButton);
         buttonsJPanel.add(saveButton);
 
-        SetFont.setFont(FONT, header, table, l_title, comboBox, addButton, saveButton);
+        SetFont.setFont(FONT, header, table, l_title, comboBox, addButton, flushButton, saveButton);
         this.add(l_title, BorderLayout.NORTH);
         this.add(scrollPane, BorderLayout.CENTER);
         this.add(buttonsJPanel, BorderLayout.SOUTH);
@@ -194,8 +203,69 @@ public class MainWindow extends JFrame {
             return;
         }
         // 保存动作
+        // deviceImpl.saveChanges();
         isChanged = false;
         System.out.println("更改将保存");
+    }
+
+    public void onFlush() {
+        Set<Device> devices = null;
+        devices = deviceImpl.getDevices();
+        int devNum = devices.size();
+        System.out.println("num: " + devNum);
+        String[][] datas = new String[devNum][6];
+        String[] titles = {
+                /* 0 */ "设备编号",
+                /* 1 */ "设备名称",
+                /* 2 */ "领用人",
+                /* 3 */ "设备类型",
+                /* 4 */ "是否借出",
+                /* 5 */ "是否报废",
+        };
+
+        for (Device device : devices) {
+            devNum--;
+            datas[devNum][0] = device.getId();
+            datas[devNum][1] = device.getName();
+            datas[devNum][2] = device.getWho();
+            datas[devNum][3] = device.getType();
+            datas[devNum][4] = device.isBorrowed() + "";
+            datas[devNum][5] = device.isDeprecated() + "";
+        }
+        for (int i = 0; i < datas.length; i++) {
+            for (int j = 0; j < datas[i].length; j++) {
+                System.out.print(datas[i][j] + "...");
+            }
+            System.out.println();
+        }
+
+        table = new JTable() {
+            public boolean isCellEditable(int row, int column) {
+                if (column == 0) {
+                    return false;
+                }
+                return true;
+            }
+        };
+        header = table.getTableHeader();
+        header.setPreferredSize(new Dimension(header.getWidth(), 50));
+        table.setRowHeight(40);
+        // table.setModel(model);
+        // scrollPane = new JScrollPane();
+        // scrollPane.add(table);
+        // scrollPane.setViewportView(table);
+        // this.remove(scrollPane);
+        // this.add(scrollPane, BorderLayout.CENTER);
+        // this.revalidate();
+        // this.repaint();
+    }
+
+    public static boolean isChanged() {
+        return isChanged;
+    }
+
+    public static void setChanged(boolean isChanged) {
+        MainWindow.isChanged = isChanged;
     }
 
 }
