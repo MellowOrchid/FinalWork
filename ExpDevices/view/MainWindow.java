@@ -12,6 +12,8 @@ import ExpDevices.entity.Device;
 import ExpDevices.service.SetFont;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Set;
@@ -25,6 +27,7 @@ public class MainWindow extends JFrame {
     private JComboBox<String> comboBox;
     private TableCellEditor cellEditor;
     private DefaultTableModel model;
+    private JButton saveButton;
     private Font font = new Font("仿宋", 0, 30);
     private DeviceImpl deviceImpl = new DeviceImpl();
     private final String ICON = "ExpDevices/static/iconImg.png";
@@ -117,6 +120,16 @@ public class MainWindow extends JFrame {
 
         l_title = new JLabel("欢迎使用实验设备管理系统");
 
+        saveButton = new JButton("保存");
+        saveButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                onSave();
+            }
+
+        });
+
         SetFont.setFont(font, header, table, l_title, comboBox);
         this.add(l_title, BorderLayout.NORTH);
         this.add(scrollPane, BorderLayout.CENTER);
@@ -138,6 +151,7 @@ public class MainWindow extends JFrame {
             if (choice == JOptionPane.YES_OPTION) {
                 // 保存动作
                 System.out.println("保存退出");
+                onSave();
                 this.dispose();
             } else if (choice == JOptionPane.NO_OPTION) {
                 System.out.println("不保存退出");
@@ -148,6 +162,14 @@ public class MainWindow extends JFrame {
         } else {
             this.dispose();
         }
+    }
+
+    public void onSave() {
+        if (!isChanged) {
+            showMessage("没有更改。");
+            return;
+        }
+        // 保存动作
     }
 
 }
