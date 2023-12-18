@@ -1,8 +1,6 @@
 package ExpDevices.view;
 
 import javax.swing.*;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableModel;
@@ -12,10 +10,7 @@ import ExpDevices.entity.Device;
 import ExpDevices.service.SetFont;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -42,7 +37,7 @@ public class MainWindow extends JFrame {
     private JButton saveButton, flushButton, addButton, deleteButton;
     private JPanel buttonsJPanel;
     private DeviceImpl deviceImpl = DeviceImpl.getDeviceImpl();
-    private final Font FONT = new Font("仿宋", 0, 30);
+    private final Font FONT = new Font("仿宋", Font.PLAIN, 30);
     private final String ICON = "ExpDevices/static/iconImg.png";
 
     public MainWindow() {
@@ -96,15 +91,10 @@ public class MainWindow extends JFrame {
         header.setPreferredSize(new Dimension(header.getWidth(), 50));
         table.setRowHeight(40);
         model = table.getModel();
-        model.addTableModelListener(new TableModelListener() {
-
-            @Override
-            public void tableChanged(TableModelEvent e) {
-                isChanged = true;
-                System.out.println("表格改动，在 " + (e.getLastRow() + 1) + " 行 " +
-                        (e.getColumn() + 1) + " 列");
-            }
-
+        model.addTableModelListener(e -> {
+            isChanged = true;
+            System.out.println("表格改动，在 " + (e.getLastRow() + 1) + " 行 " +
+                    (e.getColumn() + 1) + " 列");
         });
 
         scrollPane = new JScrollPane();
@@ -120,51 +110,16 @@ public class MainWindow extends JFrame {
         l_title = new JLabel("欢迎使用实验设备管理系统");
 
         addButton = new JButton("添加");
-        addButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("添加设备");
-                if (isChanged) {
-                    System.out.println("未保存");
-                    showMessage("有未保存的信息。");
-                    return;
-                }
-                new addExpDevice();
-            }
-
-        });
+        addButton.addActionListener(e -> onAdd());
 
         flushButton = new JButton("刷新");
-        flushButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                onFlush();
-            }
-
-        });
+        flushButton.addActionListener(e -> onFlush());
 
         deleteButton = new JButton("删除");
-        deleteButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                onDelete();
-            }
-
-        });
+        deleteButton.addActionListener(e -> onDelete());
 
         saveButton = new JButton("保存");
-        saveButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("保存按钮");
-                onSave();
-            }
-
-        });
+        saveButton.addActionListener(e -> onSave());
 
         buttonsJPanel = new JPanel(new GridLayout(1, 4, 2, 2));
         buttonsJPanel.add(addButton);
@@ -208,7 +163,18 @@ public class MainWindow extends JFrame {
         }
     }
 
+    public void onAdd() {
+        System.out.println("添加设备");
+        if (isChanged) {
+            System.out.println("未保存");
+            showMessage("有未保存的信息。");
+            return;
+        }
+        new addExpDevice();
+    }
+
     public void onSave() {
+        System.out.println("保存按钮");
         if (!isChanged) {
             System.out.println("无需更改");
             showMessage("没有更改。");
@@ -232,6 +198,7 @@ public class MainWindow extends JFrame {
             System.out.println(selectedRows[i]);
             dataVectors.remove(selectedRows[i]);
             table.updateUI();
+            isChanged = true;
         }
         table.clearSelection();
     }
