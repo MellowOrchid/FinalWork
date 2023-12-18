@@ -7,7 +7,7 @@ import ExpDevices.entity.Device;
 public interface IDeviceDAO {
     Set<Device> getDevices();
 
-    void setDevices(Set<Device> devices);
+    boolean setDevices(Set<Device> devices);
 
     Device getDeviceByID(String id);
 

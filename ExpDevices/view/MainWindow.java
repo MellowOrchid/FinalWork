@@ -127,7 +127,13 @@ public class MainWindow extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("添加设备");
-                new addExpDevice();
+                if (isChanged) {
+                    System.out.println("未保存");
+                    showMessage("有未保存的信息。");
+                } else {
+
+                    new addExpDevice();
+                }
             }
             
         });
@@ -184,10 +190,13 @@ public class MainWindow extends JFrame {
 
     public void onSave() {
         if (!isChanged) {
+            System.out.println("无需更改");
             showMessage("没有更改。");
             return;
         }
         // 保存动作
+        isChanged = false;
+        System.out.println("更改将保存");
     }
 
 }

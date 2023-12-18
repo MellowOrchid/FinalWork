@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
@@ -92,13 +93,14 @@ public class DeviceImpl implements IDeviceDAO {
     @Override
     public boolean add(Device device) {
         devices.add(device);
-        this.setDevices(devices);
-        return true;
+        return this.setDevices(devices);
     }
 
     @Override
-    public void setDevices(Set<Device> devices) {
+    public boolean setDevices(Set<Device> devices) {
+        boolean status = true;
         this.devices = devices;
+
         try {
             Class.forName(JDBC_DRIVER);
             System.out.println("连接数据库…");
@@ -122,9 +124,15 @@ public class DeviceImpl implements IDeviceDAO {
             connection.close();
         } catch (ClassNotFoundException e) {
             System.out.println("Class 未找到。");
+            status = false;
+            e.printStackTrace();
+        } catch (SQLIntegrityConstraintViolationException e) {
+            System.out.println("违反 SQL 完整性约束");
+            status = false;
             e.printStackTrace();
         } catch (SQLException e) {
             System.out.println("SQL 错误。");
+            status = false;
             e.printStackTrace();
         } finally {
             try {
@@ -139,6 +147,7 @@ public class DeviceImpl implements IDeviceDAO {
                 e.printStackTrace();
             }
         }
+        return status;
     }
 
 }

@@ -11,14 +11,18 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
+import ExpDevices.DAO.DeviceImpl;
+import ExpDevices.entity.Device;
 import ExpDevices.service.SetFont;
 
 public class addExpDevice extends JFrame {
-    private JLabel l_name, l_type;
-    private JTextField t_name, t_type;
+    private JLabel l_id, l_name, l_type;
+    private JTextField t_id, t_name, t_type;
     private JButton addButton, cancelButton;
+    private DeviceImpl deviceImpl = new DeviceImpl();
     private final Font FONT = new Font("仿宋", 0, 30);
     private final String ICON = "ExpDevices/static/iconImg.png";
 
@@ -34,15 +38,18 @@ public class addExpDevice extends JFrame {
         int left = (screenSize.width - WIDTH) / 2;
         int right = (screenSize.height - HEIGHT) / 2;
         this.setLocation(left, right);
+        this.setResizable(false);
         init();
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setVisible(true);
     }
 
     public void init() {
-        this.setLayout(new GridLayout(3, 2, 5, 5));
+        this.setLayout(new GridLayout(4, 2, 5, 5));
+        l_id = new JLabel("设备编号");
         l_name = new JLabel("设备名称");
         l_type = new JLabel("设备类型");
+        t_id = new JTextField();
         t_name = new JTextField();
         t_type = new JTextField();
 
@@ -67,8 +74,10 @@ public class addExpDevice extends JFrame {
 
         });
 
-        SetFont.setFont(FONT, l_name, l_type, t_name, t_type, addButton, cancelButton);
+        SetFont.setFont(FONT, l_id, l_name, l_type, t_id, t_name, t_type, addButton, cancelButton);
 
+        this.add(l_id);
+        this.add(t_id);
         this.add(l_name);
         this.add(t_name);
         this.add(l_type);
@@ -78,7 +87,26 @@ public class addExpDevice extends JFrame {
     }
 
     public void onAddDev() {
+        String id = t_id.getText();
+        String name = t_name.getText();
+        String type = t_type.getText();
+        boolean isAdded = false; // 判断数据库是否接受该数据
 
+        if (name.isEmpty() || type.isEmpty()) {
+            System.out.println("有空信息");
+            JOptionPane.showMessageDialog(this, "请将信息填写完整");
+            return;
+        }
+        isAdded = deviceImpl.add(new Device(id, name, null,
+                type, false, false));
+        if (!isAdded) {
+            System.out.println("添加失败");
+            JOptionPane.showMessageDialog(this, "添加失败，可能因为有重复的编号");
+            return;
+        }
+        System.out.println("添加成功");
+        JOptionPane.showMessageDialog(this, "添加成功");
+        this.dispose();
     }
 
 }
