@@ -41,17 +41,13 @@ public class MainWindow extends JFrame {
     private final String ICON = "ExpDevices/static/iconImg.png";
 
     public MainWindow() {
-        Toolkit toolkit = Toolkit.getDefaultToolkit();
-        Image image = toolkit.getImage(ICON);
-        Dimension screenSize = toolkit.getScreenSize();
+        Image image = Toolkit.getDefaultToolkit().getImage(ICON);
         this.setIconImage(image);
         this.setTitle("实验设备管理系统");
         final int WIDTH = 1600;
         final int HEIGHT = 800;
         this.setSize(WIDTH, HEIGHT);
-        int left = (screenSize.width - WIDTH) / 2;
-        int right = (screenSize.height - HEIGHT) / 2;
-        this.setLocation(left, right);
+        this.setLocationRelativeTo(null);
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
