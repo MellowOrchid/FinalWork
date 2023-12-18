@@ -27,9 +27,10 @@ public class MainWindow extends JFrame {
     private JComboBox<String> comboBox;
     private TableCellEditor cellEditor;
     private DefaultTableModel model;
-    private JButton saveButton;
-    private Font font = new Font("仿宋", 0, 30);
+    private JButton saveButton, addButton;
+    private JPanel buttonsJPanel;
     private DeviceImpl deviceImpl = new DeviceImpl();
+    private final Font FONT = new Font("仿宋", 0, 30);
     private final String ICON = "ExpDevices/static/iconImg.png";
 
     public MainWindow() {
@@ -120,19 +121,36 @@ public class MainWindow extends JFrame {
 
         l_title = new JLabel("欢迎使用实验设备管理系统");
 
+        addButton = new JButton("添加");
+        addButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("添加设备");
+                new addExpDevice();
+            }
+            
+        });
+
         saveButton = new JButton("保存");
         saveButton.addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
+                System.out.println("保存按钮");
                 onSave();
             }
 
         });
 
-        SetFont.setFont(font, header, table, l_title, comboBox);
+        buttonsJPanel = new JPanel(new GridLayout(1, 2, 2, 2));
+        buttonsJPanel.add(addButton);
+        buttonsJPanel.add(saveButton);
+
+        SetFont.setFont(FONT, header, table, l_title, comboBox, addButton, saveButton);
         this.add(l_title, BorderLayout.NORTH);
         this.add(scrollPane, BorderLayout.CENTER);
+        this.add(buttonsJPanel, BorderLayout.SOUTH);
     }
 
     public void showMessage(String message) {
