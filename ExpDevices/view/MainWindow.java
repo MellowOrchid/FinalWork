@@ -3,9 +3,9 @@ package ExpDevices.view;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableModel;
 
 import ExpDevices.DAO.DeviceImpl;
 import ExpDevices.entity.Device;
@@ -26,7 +26,7 @@ public class MainWindow extends JFrame {
     private JTableHeader header;
     private JComboBox<String> comboBox;
     private TableCellEditor cellEditor;
-    private DefaultTableModel model;
+    private TableModel model;
     private JButton saveButton, flushButton, addButton;
     private JPanel buttonsJPanel;
     private DeviceImpl deviceImpl = DeviceImpl.getDeviceImpl();
@@ -84,18 +84,15 @@ public class MainWindow extends JFrame {
             datas[devNum][5] = device.isDeprecated() + "";
         }
 
-        table = new JTable() {
+        table = new JTable(datas, titles) {
             public boolean isCellEditable(int row, int column) {
-                if (column == 0) {
-                    return false;
-                }
-                return true;
+                return column != 0;
             }
         };
         header = table.getTableHeader();
         header.setPreferredSize(new Dimension(header.getWidth(), 50));
         table.setRowHeight(40);
-        model = new DefaultTableModel(datas, titles);
+        model = table.getModel();
         model.addTableModelListener(new TableModelListener() {
 
             @Override
@@ -106,7 +103,7 @@ public class MainWindow extends JFrame {
             }
 
         });
-        table.setModel(model);
+
         scrollPane = new JScrollPane();
         scrollPane.add(table);
         scrollPane.setViewportView(table);
@@ -209,55 +206,6 @@ public class MainWindow extends JFrame {
     }
 
     public void onFlush() {
-        Set<Device> devices = null;
-        devices = deviceImpl.getDevices();
-        int devNum = devices.size();
-        System.out.println("num: " + devNum);
-        String[][] datas = new String[devNum][6];
-        String[] titles = {
-                /* 0 */ "设备编号",
-                /* 1 */ "设备名称",
-                /* 2 */ "领用人",
-                /* 3 */ "设备类型",
-                /* 4 */ "是否借出",
-                /* 5 */ "是否报废",
-        };
-
-        for (Device device : devices) {
-            devNum--;
-            datas[devNum][0] = device.getId();
-            datas[devNum][1] = device.getName();
-            datas[devNum][2] = device.getWho();
-            datas[devNum][3] = device.getType();
-            datas[devNum][4] = device.isBorrowed() + "";
-            datas[devNum][5] = device.isDeprecated() + "";
-        }
-        for (int i = 0; i < datas.length; i++) {
-            for (int j = 0; j < datas[i].length; j++) {
-                System.out.print(datas[i][j] + "...");
-            }
-            System.out.println();
-        }
-
-        table = new JTable() {
-            public boolean isCellEditable(int row, int column) {
-                if (column == 0) {
-                    return false;
-                }
-                return true;
-            }
-        };
-        header = table.getTableHeader();
-        header.setPreferredSize(new Dimension(header.getWidth(), 50));
-        table.setRowHeight(40);
-        // table.setModel(model);
-        // scrollPane = new JScrollPane();
-        // scrollPane.add(table);
-        // scrollPane.setViewportView(table);
-        // this.remove(scrollPane);
-        // this.add(scrollPane, BorderLayout.CENTER);
-        // this.revalidate();
-        // this.repaint();
     }
 
     public static boolean isChanged() {
