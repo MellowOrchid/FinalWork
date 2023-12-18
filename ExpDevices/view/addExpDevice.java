@@ -1,21 +1,11 @@
 package ExpDevices.view;
 
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 import ExpDevices.DAO.DeviceImpl;
 import ExpDevices.entity.Device;
@@ -30,17 +20,13 @@ public class addExpDevice extends JFrame {
     private final String ICON = "ExpDevices/static/iconImg.png";
 
     public addExpDevice() {
-        Toolkit toolkit = Toolkit.getDefaultToolkit();
-        Image image = toolkit.getImage(ICON);
-        Dimension screenSize = toolkit.getScreenSize();
+        Image image = Toolkit.getDefaultToolkit().getImage(ICON);
         this.setIconImage(image);
         this.setTitle("添加实验设备");
         final int WIDTH = 400;
         final int HEIGHT = 300;
         this.setSize(WIDTH, HEIGHT);
-        int left = (screenSize.width - WIDTH) / 2;
-        int right = (screenSize.height - HEIGHT) / 2;
-        this.setLocation(left, right);
+        this.setLocationRelativeTo(null);
         this.setResizable(false);
         init();
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -57,24 +43,11 @@ public class addExpDevice extends JFrame {
         t_type = new JTextField();
 
         addButton = new JButton("添加");
-        addButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("确认添加");
-                onAddDev();
-            }
-
-        });
+        addButton.addActionListener(e -> onAddDev());
         cancelButton = new JButton("取消");
-        cancelButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("取消添加");
-                dispose();
-            }
-
+        cancelButton.addActionListener(e -> {
+            System.out.println("取消添加");
+            dispose();
         });
 
         SetFont.setFont(FONT, l_id, l_name, l_type, t_id, t_name, t_type, addButton, cancelButton);
@@ -97,6 +70,7 @@ public class addExpDevice extends JFrame {
         List<String> newDeviceList;
         Vector<String> newDeviceInfo;
         boolean isAdded = false; // 判断数据库是否接受该数据
+        System.out.println("确认添加");
 
         if (name.isEmpty() || type.isEmpty()) {
             System.out.println("有空信息");
