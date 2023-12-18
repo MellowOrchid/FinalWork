@@ -7,6 +7,9 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -90,6 +93,9 @@ public class addExpDevice extends JFrame {
         String id = t_id.getText();
         String name = t_name.getText();
         String type = t_type.getText();
+        Device newDevice;
+        List<String> newDeviceList;
+        Vector<String> newDeviceInfo;
         boolean isAdded = false; // 判断数据库是否接受该数据
 
         if (name.isEmpty() || type.isEmpty()) {
@@ -97,14 +103,17 @@ public class addExpDevice extends JFrame {
             JOptionPane.showMessageDialog(this, "请将信息填写完整");
             return;
         }
-        isAdded = deviceImpl.add(new Device(id, name, null,
-                type, false, false));
+        newDevice = new Device(id, name, null, type, false, false);
+        newDeviceList = Arrays.asList(id, name, "null", type, "false", "false");
+        newDeviceInfo = new Vector<String>(newDeviceList);
+        isAdded = deviceImpl.add(newDevice);
         if (!isAdded) {
             System.out.println("添加失败");
             JOptionPane.showMessageDialog(this, "添加失败，因为有重复的编号");
             return;
         }
         MainWindow.setChanged(true);
+        MainWindow.dataVectors.add(newDeviceInfo);
         System.out.println("添加成功");
         JOptionPane.showMessageDialog(this, "添加成功");
         this.dispose();

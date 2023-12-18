@@ -16,10 +16,22 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 public class MainWindow extends JFrame {
     private static boolean isChanged = false;
+    private List<String> titleList = Arrays.asList(
+            /* 0 */ "设备编号",
+            /* 1 */ "设备名称",
+            /* 2 */ "领用人",
+            /* 3 */ "设备类型",
+            /* 4 */ "是否借出",
+            /* 5 */ "是否报废");
+    private Vector<String> titleVector = new Vector<String>(titleList);
+    public static Vector<Vector<String>> dataVectors = new Vector<Vector<String>>();
     private JLabel l_title;
     private JScrollPane scrollPane;
     private JTable table;
@@ -60,31 +72,22 @@ public class MainWindow extends JFrame {
         this.setLayout(new BorderLayout(5, 5));
         Set<Device> devices = deviceImpl.getDevices();
         int devNum = devices.size();
-        String[] devStatus = {
-                "false",
-                "true"
-        };
-        String[][] datas = new String[devNum][6];
-        String[] titles = {
-                /* 0 */ "设备编号",
-                /* 1 */ "设备名称",
-                /* 2 */ "领用人",
-                /* 3 */ "设备类型",
-                /* 4 */ "是否借出",
-                /* 5 */ "是否报废",
-        };
-
+        String[] devStatus = { "false", "true" };
+        String[][] dataStrings = new String[devNum][6];
         for (Device device : devices) {
             devNum--;
-            datas[devNum][0] = device.getId();
-            datas[devNum][1] = device.getName();
-            datas[devNum][2] = device.getWho();
-            datas[devNum][3] = device.getType();
-            datas[devNum][4] = device.isBorrowed() + "";
-            datas[devNum][5] = device.isDeprecated() + "";
+            dataStrings[devNum][0] = device.getId();
+            dataStrings[devNum][1] = device.getName();
+            dataStrings[devNum][2] = device.getWho();
+            dataStrings[devNum][3] = device.getType();
+            dataStrings[devNum][4] = device.isBorrowed() + "";
+            dataStrings[devNum][5] = device.isDeprecated() + "";
+            List<String> dataList = Arrays.asList(dataStrings[devNum]);
+            Vector<String> data = new Vector<String>(dataList);
+            dataVectors.add(data);
         }
 
-        table = new JTable(datas, titles) {
+        table = new JTable(dataVectors, titleVector) {
             public boolean isCellEditable(int row, int column) {
                 return column != 0;
             }
@@ -206,6 +209,8 @@ public class MainWindow extends JFrame {
     }
 
     public void onFlush() {
+        System.out.println("刷新");
+        table.updateUI();
     }
 
     public static boolean isChanged() {
