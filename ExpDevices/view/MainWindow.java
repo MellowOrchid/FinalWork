@@ -146,7 +146,7 @@ public class MainWindow extends JFrame {
                 System.out.println("取消");
             }
         } else {
-            System.exit(0);
+            this.dispose();
         }
     }
 
