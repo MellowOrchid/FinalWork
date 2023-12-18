@@ -92,8 +92,19 @@ public class DeviceImpl implements IDeviceDAO {
 
     @Override
     public boolean add(Device device) {
-        devices.add(device);
-        return this.setDevices(devices);
+        boolean hasDuplicateEntry = false;
+
+        for (Device d : devices) {
+            if (d.getId().equals(device.getId())) {
+                hasDuplicateEntry = true;
+                break;
+            }
+        }
+        if (!hasDuplicateEntry) {
+            devices.add(device);
+        }
+
+        return hasDuplicateEntry;
     }
 
     @Override
