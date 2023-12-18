@@ -1,6 +1,8 @@
 package ExpDevices.view;
 
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
@@ -10,9 +12,12 @@ import ExpDevices.entity.Device;
 import ExpDevices.service.SetFont;
 
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.Set;
 
 public class MainWindow extends JFrame {
+    private boolean isChanged = false;
     private JLabel l_title;
     private JScrollPane scrollPane;
     private JTable table;
@@ -36,8 +41,14 @@ public class MainWindow extends JFrame {
         int left = (screenSize.width - WIDTH) / 2;
         int right = (screenSize.height - HEIGHT) / 2;
         this.setLocation(left, right);
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                onClose();
+            }
+        });
         init();
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); // 自定义退出动作
         this.setVisible(true);
     }
 
@@ -84,6 +95,15 @@ public class MainWindow extends JFrame {
         model.setColumnIdentifiers(titles);
         model = new DefaultTableModel(datas, titles);
         model.getValueAt(devNum, devNum);
+        model.addTableModelListener(new TableModelListener() {
+
+            @Override
+            public void tableChanged(TableModelEvent e) {
+                isChanged = true;
+                System.out.println("表格改动");
+            }
+
+        });
         table.setModel(model);
         scrollPane = new JScrollPane();
         scrollPane.add(table);
@@ -105,4 +125,29 @@ public class MainWindow extends JFrame {
     public void showMessage(String message) {
         JOptionPane.showMessageDialog(this, message);
     }
+
+    public void onClose() {
+        System.out.println("窗口关闭");
+        if (isChanged) {
+            System.out.println("未保存");
+            int choice = JOptionPane.showConfirmDialog(null,
+                    "是否保存更改？", "提示",
+                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
+            System.out.println("choice: " + choice);
+
+            if (choice == JOptionPane.YES_OPTION) {
+                // 保存动作
+                System.out.println("保存退出");
+                this.dispose();
+            } else if (choice == JOptionPane.NO_OPTION) {
+                System.out.println("不保存退出");
+                this.dispose();
+            } else {
+                System.out.println("取消");
+            }
+        } else {
+            System.exit(0);
+        }
+    }
+
 }
