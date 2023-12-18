@@ -191,7 +191,7 @@ public class MainWindow extends JFrame {
         int[] selectedRows = table.getSelectedRows();
         int i = selectedRows.length;
         while (i-- != 0) {
-            System.out.println(selectedRows[i]);
+            System.out.println("行 " + selectedRows[i] + " 被删除");
             dataVectors.remove(selectedRows[i]);
             table.updateUI();
             isChanged = true;
