@@ -22,7 +22,7 @@ public class addExpDevice extends JFrame {
     private JLabel l_id, l_name, l_type;
     private JTextField t_id, t_name, t_type;
     private JButton addButton, cancelButton;
-    private DeviceImpl deviceImpl = new DeviceImpl();
+    private DeviceImpl deviceImpl = DeviceImpl.getDeviceImpl();
     private final Font FONT = new Font("仿宋", 0, 30);
     private final String ICON = "ExpDevices/static/iconImg.png";
 

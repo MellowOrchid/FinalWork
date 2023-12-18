@@ -29,7 +29,7 @@ public class MainWindow extends JFrame {
     private DefaultTableModel model;
     private JButton saveButton, addButton;
     private JPanel buttonsJPanel;
-    private DeviceImpl deviceImpl = new DeviceImpl();
+    private DeviceImpl deviceImpl = DeviceImpl.getDeviceImpl();
     private final Font FONT = new Font("仿宋", 0, 30);
     private final String ICON = "ExpDevices/static/iconImg.png";
 
@@ -98,13 +98,13 @@ public class MainWindow extends JFrame {
         model = (DefaultTableModel) this.table.getModel();
         model.setColumnIdentifiers(titles);
         model = new DefaultTableModel(datas, titles);
-        model.getValueAt(devNum, devNum);
         model.addTableModelListener(new TableModelListener() {
 
             @Override
             public void tableChanged(TableModelEvent e) {
                 isChanged = true;
-                System.out.println("表格改动");
+                System.out.println("表格改动，在 " + (e.getLastRow() + 1) + " 行 " +
+                        (e.getColumn() + 1) + " 列");
             }
 
         });
@@ -130,12 +130,11 @@ public class MainWindow extends JFrame {
                 if (isChanged) {
                     System.out.println("未保存");
                     showMessage("有未保存的信息。");
-                } else {
-
-                    new addExpDevice();
+                    return;
                 }
+                new addExpDevice();
             }
-            
+
         });
 
         saveButton = new JButton("保存");

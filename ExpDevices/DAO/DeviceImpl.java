@@ -26,7 +26,17 @@ public class DeviceImpl implements IDeviceDAO {
     private ResultSet res;
     private Connection connection = null;
     private Statement statement = null;
+    private static DeviceImpl deviceImpl;
 
+    private DeviceImpl() {
+    }
+
+    public static DeviceImpl getDeviceImpl() {
+        if (deviceImpl == null) {
+            deviceImpl = new DeviceImpl();
+        }
+        return deviceImpl;
+    }
     @Override
     public Set<Device> getDevices() {
         try {
@@ -92,19 +102,19 @@ public class DeviceImpl implements IDeviceDAO {
 
     @Override
     public boolean add(Device device) {
-        boolean hasDuplicateEntry = false;
+        boolean noDuplicateEntry = true;
 
         for (Device d : devices) {
             if (d.getId().equals(device.getId())) {
-                hasDuplicateEntry = true;
+                noDuplicateEntry = false;
                 break;
             }
         }
-        if (!hasDuplicateEntry) {
+        if (noDuplicateEntry) {
             devices.add(device);
         }
 
-        return hasDuplicateEntry;
+        return noDuplicateEntry;
     }
 
     @Override

@@ -7,7 +7,7 @@ import ExpDevices.entity.*;
 
 public class DBDev {
     public static void main(String[] args) {
-        DeviceImpl deviceImpl = new DeviceImpl();
+        DeviceImpl deviceImpl = DeviceImpl.getDeviceImpl();
         Set<Device> devices = deviceImpl.getDevices();
         // Device device1 = new Device("001", "a1", "mo", "phy", false,
         //         false);
