@@ -20,6 +20,7 @@ public class MainWindow extends JFrame {
     public static boolean isAdded = false; // 加入
     public static Device newDevice;
     private List<String> changedID = new ArrayList<String>();
+    private List<String> deleteID = new ArrayList<String>();
     private List<String> changedValue = new ArrayList<String>();
     private List<Integer> changedCol = new ArrayList<Integer>();
     private String oldValue, newValue;
@@ -220,7 +221,7 @@ public class MainWindow extends JFrame {
 
     public void onSave() {
         System.out.println("保存更改");
-        if (!isChanged && !isAdded) {
+        if (!(isChanged || isAdded)) {
             System.out.println("无需更改");
             showMessage("没有更改。");
             return;
@@ -232,11 +233,12 @@ public class MainWindow extends JFrame {
         }
         if (isChanged) {
             deviceImpl.saveChanges(changedID, changedCol, changedValue);
+            deviceImpl.delChanges(deleteID);
             changedCol.clear();
             changedID.clear();
             changedValue.clear();
+            isChanged = false;
         }
-        isChanged = false;
         System.out.println("更改将保存");
     }
 
@@ -249,9 +251,10 @@ public class MainWindow extends JFrame {
         int[] selectedRows = table.getSelectedRows();
         int i = selectedRows.length;
         while (i-- != 0) {
-            System.out.println("行 " + selectedRows[i] + " 被删除");
+            System.out.println("行 " + (selectedRows[i] + 1) + " 被删除");
+            deleteID.add(table.getValueAt(i, 0) + "");
             dataVectors.remove(selectedRows[i]);
-            table.updateUI();
+            onFlush();
             isChanged = true;
         }
         table.clearSelection();

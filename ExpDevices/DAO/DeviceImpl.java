@@ -131,8 +131,7 @@ public class DeviceImpl implements IDeviceDAO {
     }
 
     public void saveChanges(List<String> id, List<Integer> col, List<String> val) {
-    try
-    {
+        try {
             Class.forName(JDBC_DRIVER);
             System.out.println("连接数据库…");
             connection = DriverManager.getConnection(DB_URL, USER, PWD);
@@ -149,10 +148,9 @@ public class DeviceImpl implements IDeviceDAO {
                         " SET `" + DB_FIELD[col.get(i)] + "` = '" + crtVal +
                         "' WHERE (`id` = '" + id.get(i) + "');";
                 System.out.println(id.get(i) + ": status: " + statement.executeUpdate(sqlReq));
-
-                statement.close();
-                connection.close();
             }
+            statement.close();
+            connection.close();
         } catch (ClassNotFoundException e) {
             System.out.println("Class 未找到。");
             e.printStackTrace();
@@ -270,6 +268,43 @@ public class DeviceImpl implements IDeviceDAO {
             }
         }
         return status;
+    }
+
+    public void delChanges(List<String> id) {
+        try {
+            Class.forName(JDBC_DRIVER);
+            System.out.println("连接数据库…");
+            connection = DriverManager.getConnection(DB_URL, USER, PWD);
+            statement = connection.createStatement();
+
+            for (int i = 0; i < id.size(); i++) {
+                sqlReq = "DELETE FROM devices WHERE (`id` = '" + id.get(i) + "');";
+                System.out.println(id.get(i) + ": status: " + statement.executeUpdate(sqlReq));
+            }
+            statement.close();
+            connection.close();
+        } catch (ClassNotFoundException e) {
+            System.out.println("Class 未找到。");
+            e.printStackTrace();
+        } catch (SQLIntegrityConstraintViolationException e) {
+            System.out.println("违反 SQL 完整性约束");
+            e.printStackTrace();
+        } catch (SQLException e) {
+            System.out.println("SQL 错误。");
+            e.printStackTrace();
+        } finally {
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                System.out.println("SQL 错误。");
+                e.printStackTrace();
+            }
+        }
     }
 
 }
