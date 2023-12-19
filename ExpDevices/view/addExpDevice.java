@@ -16,7 +16,7 @@ public class addExpDevice extends JFrame {
     private JTextField t_id, t_name, t_type;
     private JButton addButton, cancelButton;
     private DeviceImpl deviceImpl = DeviceImpl.getDeviceImpl();
-    private final Font FONT = new Font("仿宋", 0, 30);
+    private final Font FONT = new Font("仿宋", Font.PLAIN, 30);
     private final String ICON = "ExpDevices/static/iconImg.png";
 
     public addExpDevice() {
