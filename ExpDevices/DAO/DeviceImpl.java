@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import ExpDevices.entity.Device;
@@ -20,6 +21,7 @@ public class DeviceImpl implements IDeviceDAO {
     private final String DB_URL = "jdbc:mysql://" + HOST + ":" + PORT + "/" + DB_NAME + OPTIONS;
     private final String USER = "ExpDev";
     private final String PWD = "Dev@0224";
+    private final String[] DB_FIELD = { "id", "name", "who", "type", "isBorrowed", "isDeprecated" };
 
     private Set<Device> devices;
     private String sqlReq;
@@ -31,7 +33,7 @@ public class DeviceImpl implements IDeviceDAO {
     private DeviceImpl() {
         getDB();
     }
-    
+
     public static DeviceImpl getDeviceImpl() {
         if (deviceImpl == null) {
             deviceImpl = new DeviceImpl();
@@ -64,11 +66,8 @@ public class DeviceImpl implements IDeviceDAO {
     public boolean add(Device device) {
         boolean noDuplicateEntry = true;
 
-        for (Device d : devices) {
-            if (d.getId().equals(device.getId())) {
-                noDuplicateEntry = false;
-                break;
-            }
+        if (getDeviceByID(device.getId()) != null) {
+            noDuplicateEntry = false;
         }
         if (noDuplicateEntry) {
             devices.add(device);
@@ -96,8 +95,8 @@ public class DeviceImpl implements IDeviceDAO {
                 boolean isBorrowed = device.isBorrowed();
                 boolean isDeprecated = device.isDeprecated();
                 sqlReq = "INSERT INTO devices (`id`, `name`, `who`, `type`, `isBorrowed`, `isDeprecated`) VALUES ('"
-                        + id + "', '" + name + "', '" + who + "', '" + type + "', '" + (isBorrowed ? 0 : 1) + "', '"
-                        + (isDeprecated ? 0 : 1) + "');";
+                        + id + "', '" + name + "', '" + who + "', '" + type + "', '" + (isBorrowed ? 1 : 0) + "', '"
+                        + (isDeprecated ? 1 : 0) + "');";
                 System.out.println(id + ": status: " + statement.executeUpdate(sqlReq));
             }
 
@@ -131,7 +130,51 @@ public class DeviceImpl implements IDeviceDAO {
         return status;
     }
 
-    public void saveChanges() {
+    public void saveChanges(List<String> id, List<Integer> col, List<String> val) {
+    try
+    {
+            Class.forName(JDBC_DRIVER);
+            System.out.println("连接数据库…");
+            connection = DriverManager.getConnection(DB_URL, USER, PWD);
+            statement = connection.createStatement();
+
+            for (int i = 0; i < id.size(); i++) {
+                String crtVal;
+                if (col.get(i) == 4 || col.get(i) == 5) {
+                    crtVal = val.get(i).equals("false") ? "0" : "1";
+                } else {
+                    crtVal = val.get(i);
+                }
+                sqlReq = "UPDATE devices " +
+                        " SET `" + DB_FIELD[col.get(i)] + "` = '" + crtVal +
+                        "' WHERE (`id` = '" + id.get(i) + "');";
+                System.out.println(id.get(i) + ": status: " + statement.executeUpdate(sqlReq));
+
+                statement.close();
+                connection.close();
+            }
+        } catch (ClassNotFoundException e) {
+            System.out.println("Class 未找到。");
+            e.printStackTrace();
+        } catch (SQLIntegrityConstraintViolationException e) {
+            System.out.println("违反 SQL 完整性约束");
+            e.printStackTrace();
+        } catch (SQLException e) {
+            System.out.println("SQL 错误。");
+            e.printStackTrace();
+        } finally {
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                System.out.println("SQL 错误。");
+                e.printStackTrace();
+            }
+        }
     }
 
     public void getDB() {
@@ -177,6 +220,56 @@ public class DeviceImpl implements IDeviceDAO {
                 e.printStackTrace();
             }
         }
+    }
+
+    public boolean setDevice(Device device) {
+        boolean status = true;
+
+        try {
+            Class.forName(JDBC_DRIVER);
+            System.out.println("连接数据库…");
+            connection = DriverManager.getConnection(DB_URL, USER, PWD);
+            statement = connection.createStatement();
+
+            String id = device.getId();
+            String name = device.getName();
+            String who = device.getWho();
+            String type = device.getType();
+            boolean isBorrowed = device.isBorrowed();
+            boolean isDeprecated = device.isDeprecated();
+            sqlReq = "INSERT INTO devices (`id`, `name`, `who`, `type`, `isBorrowed`, `isDeprecated`) VALUES ('"
+                    + id + "', '" + name + "', '" + who + "', '" + type + "', '" + (isBorrowed ? 1 : 0) + "', '"
+                    + (isDeprecated ? 1 : 0) + "');";
+            System.out.println(id + ": status: " + statement.executeUpdate(sqlReq));
+
+            statement.close();
+            connection.close();
+        } catch (ClassNotFoundException e) {
+            System.out.println("Class 未找到。");
+            status = false;
+            e.printStackTrace();
+        } catch (SQLIntegrityConstraintViolationException e) {
+            System.out.println("违反 SQL 完整性约束");
+            status = false;
+            e.printStackTrace();
+        } catch (SQLException e) {
+            System.out.println("SQL 错误。");
+            status = false;
+            e.printStackTrace();
+        } finally {
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                System.out.println("SQL 错误。");
+                e.printStackTrace();
+            }
+        }
+        return status;
     }
 
 }

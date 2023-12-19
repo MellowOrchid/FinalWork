@@ -1,9 +1,7 @@
 package ExpDevices.view;
 
 import javax.swing.*;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableModel;
+import javax.swing.table.*;
 
 import ExpDevices.DAO.DeviceImpl;
 import ExpDevices.entity.Device;
@@ -11,13 +9,20 @@ import ExpDevices.service.SetFont;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
 public class MainWindow extends JFrame {
-    public static boolean isChanged = false;
+    public static boolean isChanged = false; // 改变
+    public static boolean isAdded = false; // 加入
+    public static Device newDevice;
+    private List<String> changedID = new ArrayList<String>();
+    private List<String> changedValue = new ArrayList<String>();
+    private List<Integer> changedCol = new ArrayList<Integer>();
+    private String oldValue, newValue;
     private List<String> titleList = Arrays.asList(
             /* 0 */ "设备编号",
             /* 1 */ "设备名称",
@@ -31,9 +36,6 @@ public class MainWindow extends JFrame {
     private JScrollPane scrollPane;
     private static JTable table;
     private JTableHeader header;
-    private JComboBox<String> comboBox;
-    private TableCellEditor cellEditor;
-    private TableModel model;
     private JButton saveButton, flushButton, addButton, deleteButton;
     private JPanel buttonsJPanel;
     private DeviceImpl deviceImpl = DeviceImpl.getDeviceImpl();
@@ -63,7 +65,6 @@ public class MainWindow extends JFrame {
         this.setLayout(new BorderLayout(5, 5));
         Set<Device> devices = deviceImpl.getDevices();
         int devNum = devices.size();
-        String[] devStatus = { "false", "true" };
         String[][] dataStrings = new String[devNum][6];
         for (Device device : devices) {
             devNum--;
@@ -80,28 +81,76 @@ public class MainWindow extends JFrame {
 
         table = new JTable(dataVectors, titleVector) {
             public boolean isCellEditable(int row, int column) {
-                return column != 0;
+                // return column == 4 || column == 5;
+                return false;
             }
         };
+        table.addMouseListener(new MouseListener() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int row = table.getSelectedRow();
+                int col = table.getSelectedColumn();
+                if (e.getClickCount() == 2) {
+                    System.out.println("表格被双击，在 " + (row + 1) + " 行 " + (col + 1) + " 列");
+                    oldValue = (String) table.getValueAt(row, col);
+                    if (col == 4 || col == 5) {
+                        int choice = JOptionPane.showConfirmDialog(null,
+                                "反转其值？");
+                        System.out.println("choice: " + choice);
+                        if (choice == JOptionPane.OK_OPTION) {
+                            isChanged = true;
+                            newValue = oldValue.equals("false") + "";
+                            table.setValueAt(newValue, row, col);
+                            changedID.add(table.getValueAt(row, 0) + "");
+                            changedCol.add(col);
+                            changedValue.add(newValue);
+                        }
+                        return;
+                    }
+                    newValue = JOptionPane.showInputDialog(null,
+                            "修改为：", oldValue);
+                    if (newValue != null) {
+                        isChanged = !newValue.equals(oldValue);
+                        if (isChanged) {
+                            table.setValueAt(newValue, row, col);
+                            System.out.println("表格改动，在 "
+                                    + (row + 1) + " 行 " + (col + 1) + " 列");
+                            changedID.add(table.getValueAt(row, 0) + "");
+                            changedCol.add(col);
+                            changedValue.add(newValue);
+                        }
+                    } else {
+                        System.out.println("取消修改");
+                    }
+                }
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+
+        });
         header = table.getTableHeader();
+        header.setReorderingAllowed(false);
         header.setPreferredSize(new Dimension(header.getWidth(), 50));
         table.setRowHeight(40);
-        model = table.getModel();
-        model.addTableModelListener(e -> {
-            isChanged = true;
-            System.out.println("表格改动，在 " + (e.getLastRow() + 1) + " 行 " +
-                    (e.getColumn() + 1) + " 列");
-        });
 
         scrollPane = new JScrollPane();
         scrollPane.add(table);
         scrollPane.setViewportView(table);
-        comboBox = new JComboBox<String>(devStatus);
-        comboBox.setPreferredSize(null);
-        comboBox.setSelectedIndex(0);
-        cellEditor = new DefaultCellEditor(comboBox);
-        table.getColumnModel().getColumn(4).setCellEditor(cellEditor);
-        table.getColumnModel().getColumn(5).setCellEditor(cellEditor);
 
         l_title = new JLabel("欢迎使用实验设备管理系统");
 
@@ -123,7 +172,7 @@ public class MainWindow extends JFrame {
         buttonsJPanel.add(deleteButton);
         buttonsJPanel.add(saveButton);
 
-        SetFont.setFont(FONT, header, table, l_title, comboBox, addButton, flushButton, saveButton,
+        SetFont.setFont(FONT, header, table, l_title, addButton, flushButton, saveButton,
                 deleteButton);
         this.add(l_title, BorderLayout.NORTH);
         this.add(scrollPane, BorderLayout.CENTER);
@@ -136,7 +185,7 @@ public class MainWindow extends JFrame {
 
     public void onClose() {
         System.out.println("窗口关闭");
-        if (isChanged) {
+        if (isChanged || isAdded) {
             System.out.println("未保存");
             int choice = JOptionPane.showConfirmDialog(null,
                     "是否保存更改？", "提示",
@@ -161,7 +210,7 @@ public class MainWindow extends JFrame {
 
     public void onAdd() {
         System.out.println("添加设备");
-        if (isChanged) {
+        if (isChanged || isAdded) {
             System.out.println("未保存");
             showMessage("有未保存的信息。");
             return;
@@ -170,14 +219,23 @@ public class MainWindow extends JFrame {
     }
 
     public void onSave() {
-        System.out.println("保存按钮");
-        if (!isChanged) {
+        System.out.println("保存更改");
+        if (!isChanged && !isAdded) {
             System.out.println("无需更改");
             showMessage("没有更改。");
             return;
         }
         // 保存动作
-        // deviceImpl.saveChanges();
+        if (isAdded) {
+            deviceImpl.setDevice(newDevice);
+            isAdded = false;
+        }
+        if (isChanged) {
+            deviceImpl.saveChanges(changedID, changedCol, changedValue);
+            changedCol.clear();
+            changedID.clear();
+            changedValue.clear();
+        }
         isChanged = false;
         System.out.println("更改将保存");
     }
