@@ -5,8 +5,10 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.Border;
 
 import ExpDevices.entity.Database;
+import ExpDevices.service.SetFont;
 
 import java.awt.*;
 import java.io.File;
@@ -21,9 +23,9 @@ import java.util.Vector;
 public class DBConnect extends JFrame {
     private JLabel l_hello, l_target;
     private JButton b_add, b_del, b_cnct;
-    private JPanel buttoPanel;
+    private JPanel buttonPanel;
     private JComboBox<Database> chooseBox;
-    private Vector<Database> connects  = new Vector<>();
+    private Vector<Database> connects = new Vector<>();
     private final Font FONT = new Font("仿宋", Font.PLAIN, 30);
     private final String ICON = "ExpDevices/static/iconImg.png";
     private final File FILE = new File("ExpDevices/static/db.conf.txt");
@@ -32,7 +34,7 @@ public class DBConnect extends JFrame {
         Image image = Toolkit.getDefaultToolkit().getImage(ICON);
         this.setIconImage(image);
         this.setTitle("实验设备管理系统 - 选择数据库");
-        this.setSize(400, 400);
+        this.setSize(800, 400);
         this.setLocationRelativeTo(null);
         init();
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // 自定义退出动作
@@ -46,6 +48,21 @@ public class DBConnect extends JFrame {
 
         getConnects();
         chooseBox = new JComboBox<Database>(connects);
+
+        b_add = new JButton("添加");
+        b_del = new JButton("删除");
+        b_cnct = new JButton("连接");
+        buttonPanel = new JPanel(new GridLayout(2, 1, 2, 2));
+        buttonPanel.add(b_add);
+        buttonPanel.add(b_del);
+
+        SetFont.setFont(FONT, l_hello, l_target, b_add, b_del, b_cnct, chooseBox);
+
+        this.add(l_hello, BorderLayout.NORTH);
+        this.add(l_target, BorderLayout.WEST);
+        this.add(chooseBox, BorderLayout.CENTER);
+        this.add(buttonPanel, BorderLayout.EAST);
+        this.add(b_cnct, BorderLayout.SOUTH);
     }
 
     public void getConnects() {
