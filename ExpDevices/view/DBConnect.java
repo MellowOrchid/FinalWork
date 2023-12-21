@@ -39,7 +39,7 @@ public class DBConnect extends JFrame {
         this.setSize(800, 400);
         this.setLocationRelativeTo(null);
         init();
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // 自定义退出动作
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
     }
 
@@ -75,7 +75,15 @@ public class DBConnect extends JFrame {
     }
 
     private void onCnct() {
-        deviceImpl.setDB((Database) chooseBox.getSelectedItem());
+        int i = chooseBox.getSelectedIndex();
+        System.out.println("选择了：" + i);
+        if (i == -1) {
+            System.out.println("错误的选择");
+            JOptionPane.showMessageDialog(this, "请重新选择", "选择无效",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        deviceImpl.setDB(connects.get(i));
         new MainWindow();
         dispose();
     }
