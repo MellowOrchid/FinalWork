@@ -211,8 +211,8 @@ public class DeviceImpl implements IDeviceDAO {
             System.out.println("Class 未找到。");
             e.printStackTrace();
         } catch (CommunicationsException e) {
-            JOptionPane.showMessageDialog(null, "无法连接到数据库", "连接错误",
-                    JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "无法连接到数据库",
+                    "连接错误", JOptionPane.ERROR_MESSAGE);
         } catch (SQLException e) {
             System.out.println("SQL 错误。");
             e.printStackTrace();
