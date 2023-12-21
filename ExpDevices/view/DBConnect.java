@@ -77,6 +77,7 @@ public class DBConnect extends JFrame {
     private void onCnct() {
         deviceImpl.setDB((Database) chooseBox.getSelectedItem());
         new MainWindow();
+        dispose();
     }
 
     private void onDel() {
