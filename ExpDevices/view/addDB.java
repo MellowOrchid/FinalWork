@@ -22,7 +22,7 @@ import ExpDevices.service.SetFont;
 public class addDB extends JFrame {
     private JLabel l_host, l_port, l_db, l_usr, l_pwd;
     private JTextField t_host, t_port, t_db, t_usr;
-    private JPasswordField t_pwd;
+    private JPasswordField p_pwd;
     private JButton addButton, cancelButton;
     private final Font FONT = new Font("仿宋", Font.PLAIN, 30);
     private final String ICON = "ExpDevices/static/iconImg.png";
@@ -50,7 +50,7 @@ public class addDB extends JFrame {
         t_port = new JTextField("3306");
         t_db = new JTextField();
         t_usr = new JTextField();
-        t_pwd = new JPasswordField();
+        p_pwd = new JPasswordField();
 
         addButton = new JButton("添加");
         addButton.addActionListener(e -> onAddDev());
@@ -61,7 +61,7 @@ public class addDB extends JFrame {
         });
 
         SetFont.setFont(FONT, l_host, l_port, l_db, l_usr, l_pwd, t_host, t_port, t_db,
-                t_usr, t_pwd, addButton, cancelButton);
+                t_usr, addButton, cancelButton);
 
         this.add(l_host);
         this.add(t_host);
@@ -72,7 +72,7 @@ public class addDB extends JFrame {
         this.add(l_usr);
         this.add(t_usr);
         this.add(l_pwd);
-        this.add(t_pwd);
+        this.add(p_pwd);
         this.add(addButton);
         this.add(cancelButton);
     }
@@ -81,7 +81,7 @@ public class addDB extends JFrame {
         String host = t_host.getText();
         String DB_name = t_db.getText();
         String user = t_usr.getText();
-        String pwd = new String(t_pwd.getPassword());
+        String pwd = new String(p_pwd.getPassword());
         Database newDatabase;
         long port = 0L;
         boolean isFormatOK = true;
@@ -94,7 +94,7 @@ public class addDB extends JFrame {
         }
         System.out.println("确认添加");
 
-        if (hasEmpty()) {
+        if (hasEmpty(host, DB_name, user, pwd)) {
             System.out.println("有空信息");
             JOptionPane.showMessageDialog(this, "请将信息填写完整");
             return;
