@@ -7,6 +7,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import ExpDevices.DAO.DeviceImpl;
 import ExpDevices.entity.Database;
 import ExpDevices.service.SetFont;
 
@@ -26,6 +27,7 @@ public class DBConnect extends JFrame {
     private JPanel buttonPanel;
     public static JComboBox<Database> chooseBox;
     private Vector<Database> connects = new Vector<>();
+    private DeviceImpl deviceImpl = DeviceImpl.getDeviceImpl();
     private final Font FONT = new Font("仿宋", Font.PLAIN, 30);
     private final String ICON = "ExpDevices/static/iconImg.png";
     private final File FILE = new File("ExpDevices/static/db.conf.txt");
@@ -73,6 +75,8 @@ public class DBConnect extends JFrame {
     }
 
     private void onCnct() {
+        deviceImpl.setDB((Database) chooseBox.getSelectedItem());
+        new MainWindow();
     }
 
     private void onDel() {

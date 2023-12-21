@@ -10,17 +10,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import ExpDevices.entity.Database;
 import ExpDevices.entity.Device;
 
 public class DeviceImpl implements IDeviceDAO {
     private final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
-    private final String HOST = "wsl.localhost";
-    private final long PORT = 3306;
-    private final String DB_NAME = "ExpDev";
+    private String host = "wsl.localhost";
+    private long port = 3306;
+    private String DB_name = "ExpDev";
     private final String OPTIONS = "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
-    private final String DB_URL = "jdbc:mysql://" + HOST + ":" + PORT + "/" + DB_NAME + OPTIONS;
-    private final String USER = "ExpDev";
-    private final String PWD = "Dev@0224";
+    private String DB_url = "jdbc:mysql://" + host + ":" + port + "/" + DB_name + OPTIONS;
+    private String user = "ExpDev";
+    private String pwd = "Dev@0224";
     private final String[] DB_FIELD = { "id", "name", "who", "type", "isBorrowed", "isDeprecated" };
 
     private Set<Device> devices;
@@ -84,7 +85,7 @@ public class DeviceImpl implements IDeviceDAO {
         try {
             Class.forName(JDBC_DRIVER);
             System.out.println("连接数据库…");
-            connection = DriverManager.getConnection(DB_URL, USER, PWD);
+            connection = DriverManager.getConnection(DB_url, user, pwd);
             statement = connection.createStatement();
 
             for (Device device : devices) {
@@ -134,7 +135,7 @@ public class DeviceImpl implements IDeviceDAO {
         try {
             Class.forName(JDBC_DRIVER);
             System.out.println("连接数据库…");
-            connection = DriverManager.getConnection(DB_URL, USER, PWD);
+            connection = DriverManager.getConnection(DB_url, user, pwd);
             statement = connection.createStatement();
 
             for (int i = 0; i < id.size(); i++) {
@@ -180,7 +181,7 @@ public class DeviceImpl implements IDeviceDAO {
         try {
             Class.forName(JDBC_DRIVER);
             System.out.println("连接数据库…");
-            connection = DriverManager.getConnection(DB_URL, USER, PWD);
+            connection = DriverManager.getConnection(DB_url, user, pwd);
             statement = connection.createStatement();
             System.out.println("正在查询…");
             sqlReq = "SELECT * FROM devices;";
@@ -226,7 +227,7 @@ public class DeviceImpl implements IDeviceDAO {
         try {
             Class.forName(JDBC_DRIVER);
             System.out.println("连接数据库…");
-            connection = DriverManager.getConnection(DB_URL, USER, PWD);
+            connection = DriverManager.getConnection(DB_url, user, pwd);
             statement = connection.createStatement();
 
             String id = device.getId();
@@ -274,7 +275,7 @@ public class DeviceImpl implements IDeviceDAO {
         try {
             Class.forName(JDBC_DRIVER);
             System.out.println("连接数据库…");
-            connection = DriverManager.getConnection(DB_URL, USER, PWD);
+            connection = DriverManager.getConnection(DB_url, user, pwd);
             statement = connection.createStatement();
 
             for (int i = 0; i < id.size(); i++) {
@@ -305,6 +306,15 @@ public class DeviceImpl implements IDeviceDAO {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void setDB(Database database) {
+        host = database.getHost();
+        port = database.getPort();
+        DB_name = database.getDB_name();
+        user = database.getUser();
+        pwd = database.getPwd();
+        DB_url = "jdbc:mysql://" + host + ":" + port + "/" + DB_name + OPTIONS;
     }
 
 }
