@@ -116,7 +116,10 @@ public class addDB extends JFrame {
             // 写
             oOS.writeObject(newDatabase);
             oOS.flush();
+            DBConnect.chooseBox.addItem(newDatabase);
+            DBConnect.chooseBox.updateUI();
         } catch (IOException e) {
+            System.out.println("写：IO 异常");
             e.printStackTrace();
         } finally {
             try {

@@ -21,7 +21,7 @@ public class DBConnect extends JFrame {
     private JLabel l_hello, l_target;
     private JButton b_add, b_del, b_cnct;
     private JPanel buttonPanel;
-    public JComboBox<Database> chooseBox;
+    public static JComboBox<Database> chooseBox;
     private Vector<Database> connects = new Vector<>();
     private final Font FONT = new Font("仿宋", Font.PLAIN, 30);
     private final String ICON = "ExpDevices/static/iconImg.png";
