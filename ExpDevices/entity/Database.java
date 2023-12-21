@@ -62,7 +62,7 @@ public class Database implements Serializable {
 
     @Override
     public String toString() {
-        return host + "$" + port + "$" + DB_name + "$" + user + "$" + pwd;
+        return host + "$" + port + "$" + DB_name + "$" + user + "$***";
     }
 
 }

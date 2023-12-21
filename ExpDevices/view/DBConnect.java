@@ -5,7 +5,6 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.Border;
 
 import ExpDevices.entity.Database;
 import ExpDevices.service.SetFont;
@@ -14,17 +13,15 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.Vector;
 
 public class DBConnect extends JFrame {
     private JLabel l_hello, l_target;
     private JButton b_add, b_del, b_cnct;
     private JPanel buttonPanel;
-    private JComboBox<Database> chooseBox;
+    public JComboBox<Database> chooseBox;
     private Vector<Database> connects = new Vector<>();
     private final Font FONT = new Font("仿宋", Font.PLAIN, 30);
     private final String ICON = "ExpDevices/static/iconImg.png";
@@ -48,10 +45,17 @@ public class DBConnect extends JFrame {
 
         getConnects();
         chooseBox = new JComboBox<Database>(connects);
+        chooseBox.updateUI();
 
         b_add = new JButton("添加");
+        b_add.addActionListener(e -> onAdd());
+
         b_del = new JButton("删除");
+        b_del.addActionListener(e -> onDel());
+
         b_cnct = new JButton("连接");
+        b_cnct.addActionListener(e -> onCnct());
+
         buttonPanel = new JPanel(new GridLayout(2, 1, 2, 2));
         buttonPanel.add(b_add);
         buttonPanel.add(b_del);
@@ -63,6 +67,16 @@ public class DBConnect extends JFrame {
         this.add(chooseBox, BorderLayout.CENTER);
         this.add(buttonPanel, BorderLayout.EAST);
         this.add(b_cnct, BorderLayout.SOUTH);
+    }
+
+    private void onCnct() {
+    }
+
+    private void onDel() {
+    }
+
+    private void onAdd() {
+        new addDB();
     }
 
     public void getConnects() {
@@ -77,7 +91,7 @@ public class DBConnect extends JFrame {
                 c = (Database) oIS.readObject();
                 System.out.println(c);
                 connects.add(c);
-                // fIS.skip(4);
+                fIS.skip(4);
             }
         } catch (FileNotFoundException e) {
             System.out.println("读：文件未找到");
