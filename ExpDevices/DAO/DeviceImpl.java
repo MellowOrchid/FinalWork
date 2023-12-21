@@ -10,18 +10,22 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.JOptionPane;
+
+import com.mysql.cj.jdbc.exceptions.CommunicationsException;
+
 import ExpDevices.entity.Database;
 import ExpDevices.entity.Device;
 
 public class DeviceImpl implements IDeviceDAO {
     private final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
-    private String host = "wsl.localhost";
+    private String host = "";
     private long port = 3306;
-    private String DB_name = "ExpDev";
+    private String DB_name = "";
     private final String OPTIONS = "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
     private String DB_url = "jdbc:mysql://" + host + ":" + port + "/" + DB_name + OPTIONS;
-    private String user = "ExpDev";
-    private String pwd = "Dev@0224";
+    private String user = "";
+    private String pwd = "";
     private final String[] DB_FIELD = { "id", "name", "who", "type", "isBorrowed", "isDeprecated" };
 
     private Set<Device> devices;
@@ -32,7 +36,6 @@ public class DeviceImpl implements IDeviceDAO {
     private static DeviceImpl deviceImpl;
 
     private DeviceImpl() {
-        getDB();
     }
 
     public static DeviceImpl getDeviceImpl() {
@@ -44,6 +47,7 @@ public class DeviceImpl implements IDeviceDAO {
 
     @Override
     public Set<Device> getDevices() {
+        getDB();
         return devices;
     }
 
@@ -181,6 +185,9 @@ public class DeviceImpl implements IDeviceDAO {
         try {
             Class.forName(JDBC_DRIVER);
             System.out.println("连接数据库…");
+            int timeOut = 10;
+            DriverManager.setLoginTimeout(timeOut);
+            System.out.println("超时时间为：" + timeOut);
             connection = DriverManager.getConnection(DB_url, user, pwd);
             statement = connection.createStatement();
             System.out.println("正在查询…");
@@ -203,6 +210,9 @@ public class DeviceImpl implements IDeviceDAO {
         } catch (ClassNotFoundException e) {
             System.out.println("Class 未找到。");
             e.printStackTrace();
+        } catch (CommunicationsException e) {
+            JOptionPane.showMessageDialog(null, "无法连接到数据库", "连接错误",
+                    JOptionPane.ERROR_MESSAGE);
         } catch (SQLException e) {
             System.out.println("SQL 错误。");
             e.printStackTrace();

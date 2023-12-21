@@ -81,16 +81,16 @@ public class DBConnect extends JFrame {
     }
 
     private void onDel() {
+        int i = chooseBox.getSelectedIndex();
+        if (i == -1) {
+            System.out.println("空列表");
+            JOptionPane.showMessageDialog(this, "列表为空");
+            return;
+        }
         int choose = JOptionPane.showConfirmDialog(this, "确认删除此连接？");
         System.out.println("choose: " + choose);
         if (choose == JOptionPane.OK_OPTION) {
-            int i = chooseBox.getSelectedIndex();
             System.out.println("删除：" + i);
-            if (i == -1) {
-                System.out.println("空列表");
-                JOptionPane.showMessageDialog(this, "列表为空");
-                return;
-            }
             connects.remove(i);
             chooseBox.updateUI();
             updateDBconf();
@@ -103,13 +103,15 @@ public class DBConnect extends JFrame {
         ObjectOutputStream oOS = null;
 
         try {
-            fOS = new FileOutputStream(file); // 改追加
-            // 3. 创建一根粗管道与细管道对接
+            fOS = new FileOutputStream(file);
             oOS = new ObjectOutputStream(fOS);
-            // 写
-            for (Database database : connects) {
-                oOS.writeObject(database);
-                oOS.flush();
+            if (connects.isEmpty()) {
+                file.delete();
+            } else {
+                for (Database database : connects) {
+                    oOS.writeObject(database);
+                    oOS.flush();
+                }
             }
         } catch (IOException e) {
             System.out.println("写：IO 异常");
@@ -135,6 +137,9 @@ public class DBConnect extends JFrame {
     }
 
     public void getConnects() {
+        if (!FILE.exists()) {
+            return;
+        }
         FileInputStream fIS = null;
         ObjectInputStream oIS = null;
 

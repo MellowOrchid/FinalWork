@@ -31,16 +31,16 @@ public class DBDev {
         // System.out.println(device);
         // }
 
-        Database database = new Database("127.0.0.1", 3306, "name",
-                "test", "test");
+        // Database database = new Database("127.0.0.1", 3306, "name",
+        //         "test", "test");
         try {
             fOS = new FileOutputStream(file);
             // 3. 创建一根粗管道与细管道对接
             oOS = new ObjectOutputStream(fOS);
             // 写
-            oOS.writeObject(database);
-            oOS.writeObject(new Database("127.0.0.12", 33067, "name7",
-                "test7", "test7"));
+            // oOS.writeObject(database);
+            // oOS.writeObject(new Database("127.0.0.12", 33067, "name7",
+            //     "test7", "test7"));
             oOS.flush();
         } catch (IOException e) {
             e.printStackTrace();
