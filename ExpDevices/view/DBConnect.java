@@ -4,6 +4,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import ExpDevices.entity.Database;
@@ -13,8 +14,10 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Vector;
 
 public class DBConnect extends JFrame {
@@ -73,6 +76,53 @@ public class DBConnect extends JFrame {
     }
 
     private void onDel() {
+        int choose = JOptionPane.showConfirmDialog(this, "确认删除此连接？");
+        System.out.println("choose: " + choose);
+        if (choose == JOptionPane.OK_OPTION) {
+            int i = chooseBox.getSelectedIndex();
+            System.out.println("删除：" + i);
+            if (i == -1) {
+                System.out.println("空列表");
+                JOptionPane.showMessageDialog(this, "列表为空");
+                return;
+            }
+            connects.remove(i);
+            chooseBox.updateUI();
+            updateDBconf();
+        }
+    }
+
+    private void updateDBconf() {
+        File file = new File("ExpDevices/static/db.conf.txt");
+        FileOutputStream fOS = null;
+        ObjectOutputStream oOS = null;
+
+        try {
+            fOS = new FileOutputStream(file); // 改追加
+            // 3. 创建一根粗管道与细管道对接
+            oOS = new ObjectOutputStream(fOS);
+            // 写
+            for (Database database : connects) {
+                oOS.writeObject(database);
+                oOS.flush();
+            }
+        } catch (IOException e) {
+            System.out.println("写：IO 异常");
+            e.printStackTrace();
+        } finally {
+            try {
+                if (oOS != null) {
+                    oOS.close();
+                }
+                if (fOS != null) {
+                    fOS.close();
+                }
+            } catch (IOException e) {
+                System.out.println("关流：IO 异常");
+                e.printStackTrace();
+
+            }
+        }
     }
 
     private void onAdd() {

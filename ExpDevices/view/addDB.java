@@ -78,9 +78,6 @@ public class addDB extends JFrame {
     }
 
     public void onAddDev() {
-        File file = new File("ExpDevices/static/db.conf.txt");
-        FileOutputStream fOS = null;
-        ObjectOutputStream oOS = null;
         String host = t_host.getText();
         String DB_name = t_db.getText();
         String user = t_usr.getText();
@@ -109,14 +106,37 @@ public class addDB extends JFrame {
         }
 
         newDatabase = new Database(host, port, DB_name, user, pwd);
+        add(newDatabase);
+
+        System.out.println("添加成功");
+        JOptionPane.showMessageDialog(this, "添加成功");
+        this.dispose();
+    }
+
+    private boolean hasEmpty(String... strings) {
+        for (String string : strings) {
+            if (string.isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean add(Database database) {
+        File file = new File("ExpDevices/static/db.conf.txt");
+        FileOutputStream fOS = null;
+        ObjectOutputStream oOS = null;
+        boolean isAdded = false;
+
         try {
             fOS = new FileOutputStream(file, true); // 改追加
             // 3. 创建一根粗管道与细管道对接
             oOS = new ObjectOutputStream(fOS);
             // 写
-            oOS.writeObject(newDatabase);
+            oOS.writeObject(database);
             oOS.flush();
-            DBConnect.chooseBox.addItem(newDatabase);
+            isAdded = true;
+            DBConnect.chooseBox.addItem(database);
             DBConnect.chooseBox.updateUI();
         } catch (IOException e) {
             System.out.println("写：IO 异常");
@@ -130,23 +150,13 @@ public class addDB extends JFrame {
                     fOS.close();
                 }
             } catch (IOException e) {
+                System.out.println("关流：IO 异常");
                 e.printStackTrace();
 
             }
         }
 
-        System.out.println("添加成功");
-        JOptionPane.showMessageDialog(this, "添加成功");
-        this.dispose();
-    }
-
-    private boolean hasEmpty(String ...strings) {
-        for (String string : strings) {
-            if (string.isEmpty()) {
-                return true;
-            }
-        }
-        return false;
+        return isAdded;
     }
 
 }
